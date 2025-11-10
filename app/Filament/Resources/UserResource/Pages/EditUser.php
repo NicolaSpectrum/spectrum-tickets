@@ -17,9 +17,10 @@ class EditUser extends EditRecord
         ];
     }
 
-      protected function afterSave(): void
+      protected function afterCreate(): void
     {
-        $this->record->syncRoles([$this->record->role]);
+        $roles = $this->data['roles'] ?? [];
     }
+
 
 }

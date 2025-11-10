@@ -10,6 +10,7 @@ use Filament\Tables;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
 use Filament\Forms\Form;
+use Spatie\Permission\Models\Role;
 
 class UserResource extends Resource
 {
@@ -27,19 +28,17 @@ class UserResource extends Resource
                 ->email()
                 ->unique(ignoreRecord: true)
                 ->required(),
-            Forms\Components\Select::make('role')
-                ->options([
-                    'admin' => 'Admin',
-                    'organizer' => 'Organizer',
-                    'verifier' => 'Verifier',
-                    'attender' => 'Attender',
-                ])
-                ->required(),
+            Forms\Components\Select::make('roles')
+                ->label('Roles')
+                ->multiple()
+                ->relationship('roles', 'name')
+                ->preload()
+                ->required()   
+                ->getOptionLabelFromRecordUsing(fn ($record) => ucfirst($record->name)),
             Forms\Components\Select::make('agency_id')
                 ->label('Agency')
                 ->options(Agency::pluck('name', 'id'))
-                ->searchable()
-                ->visible(fn ($get) => in_array($get('role'), ['organizer', 'verifier'])),
+                ->searchable(),
             Forms\Components\TextInput::make('password')
                 ->password()
                 ->required(fn(string $operation): bool => $operation === 'create')
@@ -54,13 +53,16 @@ class UserResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')->searchable(),
                 Tables\Columns\TextColumn::make('email'),
-                Tables\Columns\BadgeColumn::make('role')
+                Tables\Columns\BadgeColumn::make('roles.name')
+                    ->label('Rol')
                     ->colors([
-                        'success' => 'admin',
-                        'warning' => 'organizer',
-                        'info' => 'verifier',
-                        'gray' => 'attender',
-                    ]),
+                        'success' => fn ($state): bool => $state === 'admin',
+                        'warning' => fn ($state): bool => $state === 'organizer',
+                        'info'    => fn ($state): bool => $state === 'verifier',
+                        'gray'    => fn ($state): bool => $state === 'attender',
+                    ])
+                    ->formatStateUsing(fn ($state) => ucfirst($state))
+                    ->separator(', '),
                 Tables\Columns\TextColumn::make('agency.name')->label('Agency'),
             ])
             ->filters([])

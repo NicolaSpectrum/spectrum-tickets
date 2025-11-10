@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('agencies', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('contact_name')->nullable();
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
-            $table->string('role')->default('attender');
-            $table->foreignId('agency_id')->nullable()->constrained()->nullOnDelete();
+            $table->text('address')->nullable();
             $table->timestamps();
         });
     }
