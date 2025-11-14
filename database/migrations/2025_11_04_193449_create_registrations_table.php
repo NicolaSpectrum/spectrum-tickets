@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('token')->unique();
             $table->string('qr_path')->nullable();
             $table->boolean('checked_in')->default(false);
+            $table->timestamp('checked_in_at')->nullable();
+            $table->foreignId('verified_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }
