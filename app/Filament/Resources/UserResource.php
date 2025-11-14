@@ -37,7 +37,9 @@ class UserResource extends Resource
                 ->getOptionLabelFromRecordUsing(fn ($record) => ucfirst($record->name)),
             Forms\Components\Select::make('agency_id')
                 ->label('Agency')
-                ->options(Agency::pluck('name', 'id'))
+                ->relationship('agency', 'name')
+                ->preload()
+                ->placeholder('No agency')
                 ->searchable(),
             Forms\Components\TextInput::make('password')
                 ->password()
