@@ -18,6 +18,8 @@ class Registration extends Model
         'checked_in',
         'checked_in_at',
         'verified_by',
+        'id_type',
+        'id_number',
     ];
 
    

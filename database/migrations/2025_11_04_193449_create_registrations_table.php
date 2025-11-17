@@ -16,6 +16,11 @@ return new class extends Migration
             $table->foreignId('celebration_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('email');
+            $table->enum('id_type', ['cc', 'ce', 'passport', 'other']);
+            $table->string('id_number');
+            $table->unique(['celebration_id', 'id_number']);
+            $table->string('seat_type')->nullable();   
+            $table->string('seat_number')->nullable();  
             $table->string('token')->unique();
             $table->string('qr_path')->nullable();
             $table->boolean('checked_in')->default(false);
