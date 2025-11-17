@@ -16,6 +16,11 @@ class Celebration extends Model
         'end_date',
         'max_tickets',
         'status',
+        'ticket_types',
+    ];
+
+    protected $casts = [
+    'ticket_types' => 'array',
     ];
 
     public function agency()

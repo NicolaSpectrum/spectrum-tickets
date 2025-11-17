@@ -20,6 +20,8 @@ class Registration extends Model
         'verified_by',
         'id_type',
         'id_number',
+        'seat_type',
+        'seat_number',
     ];
 
    

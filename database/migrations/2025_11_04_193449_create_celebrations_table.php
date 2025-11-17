@@ -20,8 +20,10 @@ return new class extends Migration
             $table->string('location')->nullable();
             $table->dateTime('start_date')->nullable();
             $table->dateTime('end_date')->nullable();
+            $table->json('ticket_types')->nullable();
+            $table->boolean('has_seating')->default(false);
             $table->integer('max_tickets')->default(0);
-            $table->enum('status', ['draft', 'pending_approval', 'approved', 'rejected'])->default('draft');
+            $table->enum('status', ['draft', 'pending_approval', 'approved', 'rejected','completed'])->default('draft');
             $table->timestamps();
         });
     }
