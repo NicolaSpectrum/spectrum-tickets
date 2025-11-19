@@ -8,6 +8,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Actions\Action;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Notifications\Notification;
@@ -122,6 +123,9 @@ class CelebrationResource extends Resource
                             'pending_approval'  => 'Pendiente de Aprobación',
                             'approved'          => 'Aprobado',
                             'rejected'          => 'Rechazado',
+                            'completed'         => 'Completado',
+                            'cancelled'         => 'Cancelado',
+
                         ])
                         ->disabled(fn () => !auth()->user()->hasRole('admin'))
                         ->visible(fn () => auth()->user()->hasRole('admin'))
@@ -157,18 +161,24 @@ class CelebrationResource extends Resource
                         'success' => 'approved',
                         'danger'  => 'rejected',
                         'info' => 'completed',
+                        'danger'=> 'cancelled',
                     ])
                     ->icons([
                         'heroicon-o-pencil'       => 'draft',
                         'heroicon-o-clock'        => 'pending_approval',
                         'heroicon-o-check-circle' => 'approved',
                         'heroicon-o-x-circle'     => 'rejected',
+                        'heroicon-o-check-circle' => 'completed',
+                        'heroicon-o-x-circle'     =>  'cancelled',
+                        
                     ])
                     ->formatStateUsing(fn ($state) => match ($state) {
                         'draft'             => 'Borrador',
                         'pending_approval'  => 'Pendiente',
                         'approved'          => 'Aprobado',
                         'rejected'          => 'Rechazado',
+                        'completed'         => 'Completado',
+                        'cancelled'         => 'Cancelado',
                     })
                     ->sortable(),
 
@@ -197,13 +207,11 @@ class CelebrationResource extends Resource
                     ->dateTime('d M Y - H:i')
                     ->sortable()
                     ->icon('heroicon-o-clock'),
-
-               
                 
             ])
 
             
-            ->defaultSort('start_date', 'desc')
+            ->defaultSort('created_at', 'desc')
             ->striped() // filas alternadas visualmente
             ->paginationPageOptions([10, 25, 50])
 
@@ -217,6 +225,13 @@ class CelebrationResource extends Resource
                 //        'celebration_id' => $record->id,
                 //    ]))
                 //    ->visible(fn ($record) => $record->status === 'approved'),
+
+                Tables\Actions\Action::make('verify')
+                    ->label('Verificar entradas')
+                    ->icon('heroicon-o-qr-code')
+                    ->url(fn ($record) => route('celebrations.verify.show', ['celebration' => $record->id]))
+                    ->openUrlInNewTab()
+                    ->visible(fn ($record) => $record->status === 'approved'),
 
                 Tables\Actions\EditAction::make(),
 
@@ -240,7 +255,10 @@ class CelebrationResource extends Resource
         if ($user->hasRole('organizer')) {
             return $query->where('created_by', $user->id);
         }
-
+        
+        if ($user->hasRole('verifier')) {
+            return $query->where('agency_id', $user->agency_id);
+        }
         return $query;
     }
 
@@ -248,7 +266,7 @@ class CelebrationResource extends Resource
     public static function canViewAny(): bool
     {
         $user = auth()->user();
-        return $user->hasRole(['admin', 'organizer']);
+        return $user->hasRole(['admin', 'organizer','verifier']);
     }
 
     public static function canCreate(): bool

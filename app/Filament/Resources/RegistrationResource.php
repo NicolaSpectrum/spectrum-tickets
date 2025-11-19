@@ -181,7 +181,6 @@ class RegistrationResource extends Resource
         return $table
             ->columns([
 
-                
                 Tables\Columns\TextColumn::make('name')
                     ->label('Asistente')
                     ->icon('heroicon-o-user')
@@ -201,7 +200,8 @@ class RegistrationResource extends Resource
                     ->label('Celebración')
                     ->description(fn ($record) => $record->celebration->start_date)
                     ->icon('heroicon-o-sparkles')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
                 Tables\Columns\BadgeColumn::make('id_type')
                     ->label('ID Tipo')
@@ -246,7 +246,7 @@ class RegistrationResource extends Resource
                     ->sortable(),
             ])
 
-            ->defaultSort('name')
+            ->defaultSort('created_at', 'desc')
             ->striped()
             ->paginationPageOptions([10, 25, 50])
 
@@ -289,6 +289,13 @@ class RegistrationResource extends Resource
 
         return $query;
     }
+
+     public static function canViewAny(): bool
+    {
+        $user = auth()->user();
+        return $user->hasRole(['admin', 'organizer']);
+    }
+
 
     public static function getPages(): array
     {

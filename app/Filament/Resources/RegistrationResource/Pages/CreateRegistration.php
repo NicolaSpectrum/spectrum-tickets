@@ -5,10 +5,10 @@ namespace App\Filament\Resources\RegistrationResource\Pages;
 use App\Filament\Resources\RegistrationResource;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Str;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Storage;
-use App\Mail\RegistrationQrMail;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\RegistrationQrMail;
+use App\Services\QrService;
 
 class CreateRegistration extends CreateRecord
 {
@@ -16,9 +16,8 @@ class CreateRegistration extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        // Crear token
+        // Generamos token único
         $data['token'] = Str::uuid();
-
         return $data;
     }
 
@@ -26,18 +25,24 @@ class CreateRegistration extends CreateRecord
     {
         $registration = $this->record;
 
-        // Crear QR que contiene el token
-        $qr = QrCode::format('png')
-            ->size(300)
-            ->generate($registration->token);
+        /** @var QrService $qrService */
+        $qrService = app(QrService::class);
 
-        // Guardar QR
+        // Generar QR enriquecido en PNG
+        $qrPng = $qrService->generateRegistrationQr($registration);
+
+        // Guardarlo físicamente (opcional pero recomendado)
         $path = 'qrs/' . $registration->token . '.png';
-        Storage::disk('public')->put($path, $qr);
+        Storage::disk('public')->put($path, $qrPng);
 
-        $registration->update(['qr_path' => $path]);
+        // Guardar la ruta en DB
+        $registration->update([
+            'qr_path' => $path
+        ]);
 
-        // Enviar email con QR adjunto
-        Mail::to($registration->email)->send(new RegistrationQrMail($registration));
+        // Enviar correo
+        Mail::to($registration->email)->send(
+            new RegistrationQrMail($registration)
+        );
     }
 }
