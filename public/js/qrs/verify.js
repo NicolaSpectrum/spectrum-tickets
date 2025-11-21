@@ -13,8 +13,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Inicializar sonidos ---
     function initSounds() {
-        successSound = new Audio('/sounds/success.mp3');
+        successSound = new Audio('/sounds/success.wav');
         errorSound = new Audio('/sounds/error.mp3');
+        warnigSound = new Audio('/sounds/warning.wav');
         // puedes usar archivos cortos en /public/sounds o enlaces absolutos
     }
 
@@ -28,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
         if (type === 'success' && successSound) successSound.play().catch(() => {});
+        if (type === 'warning' && warnigSound) warnigSound.play().catch(() => {});
         if (type === 'error' && errorSound) errorSound.play().catch(() => {});
     }
 
@@ -65,35 +67,105 @@ document.addEventListener('DOMContentLoaded', function () {
             if (res.ok && data.status === 'success') {
                 feedback('success');
                 showResult(`
-                    <div class="p-4 bg-green-50 border border-green-200 rounded animate-fadeIn">
-                        <strong class="text-green-700">✔ ${data.message}</strong>
-                        <div class="mt-2 text-sm text-gray-700">
-                            <div><strong>Nombre:</strong> ${data.data.name}</div>
-                            <div><strong>Email:</strong> ${data.data.email}</div>
-                            <div><strong>Ubicación:</strong> ${data.data.seat_type ?? 'N/A'} ${data.data.seat_number ? ' - ' + data.data.seat_number : ''}</div>
-                            <div><strong>Check-in:</strong> ${data.data.checked_in_at}</div>
+                     <div class="p-5 bg-green-50 border border-green-300 rounded-xl shadow-sm animate-fadeIn">
+                        <!-- Título / estado -->
+                        <div class="flex justify-center gap-2 text-green-700 font-bold text-lg items-center">
+                            <span>${data.message}</span>
                         </div>
-                        <div class="text-xs text-gray-400 mt-1">Tiempo de verificación: ${elapsed} ms</div>
+
+
+                        <!-- Ubicación destacada -->
+                        <div class="mt-4 flex flex-col items-center">
+                            <div class="text-xs text-gray-600 uppercase tracking-wide">
+                                Ubicación asignada
+                            </div>
+
+                            <div class="mt-1 px-5 py-2 bg-green-600 text-white rounded-lg text-xl font-semibold shadow">
+                                ${data.data.seat_type ?? 'General'}
+                                ${data.data.seat_number ? ' - ' + data.data.seat_number : ''}
+                            </div>
+                        </div>
+
+                        <div class="mt-4 text-gray-800 text-2xl font-semibold text-center">
+                            ${data.data.name}
+                        </div>
+
+                        <!-- Datos del usuario -->
+                        <div class="mt-5 text-gray-700 text-sm space-y-2">
+                            <div><span class="font-medium">Email:</span> ${data.data.email}</div>
+                            <div><span class="font-medium">Check-in:</span> ${data.data.checked_in_at}</div>
+                        </div>
+
+                        <!-- Tiempo -->
+                        <div class="text-xs text-gray-400 mt-3 text-right">
+                            Tiempo: ${elapsed}ms
+                        </div>
                     </div>
                 `);
             } else if (res.ok && data.status === 'already') {
                 feedback('warning');
                 showResult(`
-                    <div class="p-4 bg-yellow-50 border border-yellow-200 rounded animate-fadeIn">
-                        <strong class="text-yellow-700">⚠ ${data.message}</strong>
-                        <div class="mt-2 text-sm text-gray-700">
-                            <div><strong>Nombre:</strong> ${data.data.name}</div>
-                            <div><strong>Asiento:</strong> ${data.data.seat_type ?? 'N/A'} ${data.data.seat_number ? ' - ' + data.data.seat_number : ''}</div>
-                            <div><strong>Último check-in:</strong> ${data.data.checked_in_at}</div>
+                     <div class="p-5 bg-yellow-50 border border-yellow-300 rounded-xl shadow-sm animate-fadeIn">
+                    <!-- Título del warning -->
+                    <div class="flex items-center gap-2 text-yellow-700 font-bold text-lg justify-center">
+                        <span class="text-2xl">⚠</span>
+                        <span>${data.message}</span>
+                    </div>
+
+                    <!-- Nombre destacado -->
+                    <div class="mt-4 text-gray-800 text-xl font-semibold text-center">
+                        ${data.data.name}
+                    </div>
+
+                    <!-- Información -->
+                    <div class="mt-3 text-gray-800 text-sm text-center space-y-1">
+                        <div>
+                            <span class="font-semibold">Asiento:</span>
+                            ${data.data.seat_type ?? 'N/A'}${data.data.seat_number ? ' - ' + data.data.seat_number : ''}
+                        </div>
+
+                        <div>
+                            <span class="font-semibold">Último check-in:</span>
+                            ${data.data.checked_in_at ?? '—'}
                         </div>
                     </div>
+
+                    <!-- Línea fina separadora -->
+                    <div class="mt-4 border-t border-yellow-200"></div>
+
+                    <div class="text-xs text-gray-400 mt-2 text-center">
+                        Este registro ya había ingresado anteriormente.
+                    </div>
+                </div>
                 `);
             } else {
                 feedback('error');
                 showResult(`
-                    <div class="p-4 bg-red-50 border border-red-200 rounded animate-fadeIn">
-                        <strong class="text-red-700">✖ ${data.message || 'Error al verificar'}</strong>
+                    <div class="p-5 bg-red-50 border border-red-300 rounded-xl shadow-sm animate-fadeIn">
+                    <!-- Header -->
+                    <div class="flex items-center gap-3 justify-center text-red-700 font-bold text-lg">
+                        <span class="text-2xl">✖</span>
+                        <span>${data.message || 'Error al verificar'}</span>
                     </div>
+
+                    <!-- Mensaje secundario -->
+                    <div class="mt-3 text-sm text-red-700 text-center">
+                        El ticket no es válido o no pertenece a este evento.
+                    </div>
+
+                    <!-- Información adicional si existe -->
+                    ${data.data && (data.data.error_detail || data.data.hint) ? `
+                        <div class="mt-4 text-xs text-gray-600 text-center">
+                            ${data.data.error_detail ? `<div><strong>Detalle:</strong> ${data.data.error_detail}</div>` : ''}
+                            ${data.data.hint ? `<div class="mt-1">${data.data.hint}</div>` : ''}
+                        </div>
+                    ` : ''}
+
+                    <div class="mt-4 text-xs text-gray-400 text-center">
+                        Verifique nuevamente el código.
+                    </div>
+
+                </div>
                 `);
             }
         } catch (e) {

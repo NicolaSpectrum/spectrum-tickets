@@ -15,7 +15,7 @@ class VerifyCelebrationController extends Controller
         // Verificar que el verificador pertenece a la misma agency (solo si aplica)
         $user = auth()->user();
         if ($user->hasRole('verifier') && $user->agency_id && $celebration->agency_id !== $user->agency_id) {
-            abort(403, 'No autorizado para verificar esta celebración.');
+            abort(403, 'No autorizado para verificar este evento');
         }
 
         return view('celebrations.verify', [
@@ -41,7 +41,7 @@ class VerifyCelebrationController extends Controller
         if (! $registration) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Ticket no encontrado para esta celebración.'
+                'message' => 'Ticket no encontrado para este evento'
             ], 404);
         }
 
@@ -50,7 +50,7 @@ class VerifyCelebrationController extends Controller
         if ($user->hasRole('verifier') && $user->agency_id && $registration->celebration->agency_id !== $user->agency_id) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'No autorizado para verificar tickets de otra agencia.'
+                'message' => 'No autorizado para verificar tickets de otra agencia'
             ], 403);
         }
 
@@ -58,7 +58,7 @@ class VerifyCelebrationController extends Controller
         if ($registration->checked_in) {
             return response()->json([
                 'status' => 'already',
-                'message' => 'Este ticket ya fue usado.',
+                'message' => 'Este ticket ya fue usado',
                 'data' => [
                     'name' => $registration->name,
                     'seat_type' => $registration->seat_type,
@@ -78,7 +78,7 @@ class VerifyCelebrationController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Acceso permitido. Check-in registrado.',
+            'message' => 'Acceso permitido',
             'data' => [
                 'name' => $registration->name,
                 'email' => $registration->email,
