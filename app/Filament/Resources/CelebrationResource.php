@@ -17,10 +17,10 @@ class CelebrationResource extends Resource
 {
     protected static ?string $model = Celebration::class;
     protected static ?string $navigationIcon = 'heroicon-o-sparkles';
-    protected static ?string $navigationGroup = 'Celebrations';
-    protected static ?string $modelLabel = 'Celebration';   
-    protected static ?string $pluralModelLabel = 'Celebrations';
-
+    protected static ?string $modelLabel = 'Evento';
+    protected static ?string $pluralModelLabel = 'Eventos';
+    protected static ?string $navigationLabel = 'Eventos';
+    protected static ?string $navigationGroup = 'Gestión de Eventos';
 
     public static function form(Form $form): Form
     {

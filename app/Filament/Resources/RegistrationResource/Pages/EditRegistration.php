@@ -16,4 +16,17 @@ class EditRegistration extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    protected function getFormActions(): array
+
+    {
+
+        return [
+
+            $this->getSaveFormAction()->label('Guardar cambios'),
+            $this->getCancelFormAction()->label('Cancelar'),
+        ];
+
+    }
+
 }

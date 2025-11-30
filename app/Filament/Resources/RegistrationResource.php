@@ -15,14 +15,18 @@ class RegistrationResource extends Resource
 {
     protected static ?string $model = Registration::class;
     protected static ?string $navigationIcon = 'heroicon-o-ticket';
-    protected static ?string $navigationGroup = 'Celebrations';
+    protected static ?string $modelLabel = 'Ticket';
+    protected static ?string $pluralModelLabel = 'Tickets';
+    protected static ?string $navigationLabel = 'Tickets';
+    protected static ?string $navigationGroup = 'Gestión de Eventos';
+
 
     public static function form(Form $form): Form
     {
         return $form->schema([
 
             Forms\Components\Section::make('Datos del Evento')
-                ->description('Selecciona la celebración aprobada y asigna la ubicación.')
+                ->description('Selecciona el evento aprobado y asigna la ubicación.')
                 ->icon('heroicon-o-sparkles')
                 ->schema([
                     Forms\Components\Select::make('celebration_id')
@@ -38,7 +42,7 @@ class RegistrationResource extends Resource
                                 return $query;
                             }
                         )
-                        ->label('Celebración')
+                        ->label('Evento')
                         ->required()
                         ->preload()
                         ->searchable()
@@ -97,7 +101,7 @@ class RegistrationResource extends Resource
                                     ->exists();
 
                                 if ($exists) {
-                                    $fail("Este asistente ya está registrado para esta celebración.");
+                                    $fail("Este asistente ya está registrado para este evento.");
                                 }
                             }
                         ]),
@@ -163,7 +167,7 @@ class RegistrationResource extends Resource
                                     ->exists();
 
                                 if ($exists) {
-                                    $fail("El asiento '{$value}' ya está asignado dentro de esta celebración.");
+                                    $fail("El asiento '{$value}' ya está asignado dentro de este evento.");
                                 }
                             }
                         ])
@@ -197,7 +201,7 @@ class RegistrationResource extends Resource
                     ->falseColor('gray'),
 
                 Tables\Columns\TextColumn::make('celebration.name')
-                    ->label('Celebración')
+                    ->label('Evento')
                     ->description(fn ($record) => $record->celebration->start_date)
                     ->icon('heroicon-o-sparkles')
                     ->sortable()

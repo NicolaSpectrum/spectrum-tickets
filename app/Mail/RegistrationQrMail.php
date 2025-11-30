@@ -6,7 +6,7 @@ use App\Models\Registration;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Storage; // ← IMPORTANTE
+use Illuminate\Support\Facades\Storage; 
 
 class RegistrationQrMail extends Mailable
 {

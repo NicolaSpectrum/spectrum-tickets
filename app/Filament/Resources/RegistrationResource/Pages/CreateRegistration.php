@@ -13,6 +13,19 @@ use App\Services\QrService;
 class CreateRegistration extends CreateRecord
 {
     protected static string $resource = RegistrationResource::class;
+    
+    public function getTitle(): string
+    {
+        return 'Crear Ticket';
+    }
+    protected function getFormActions(): array
+    {
+        return [
+            $this->getCreateFormAction()->label('Guardar'),
+            $this->getCreateAnotherFormAction()->label('Guardar y crear otro evento'),
+            $this->getCancelFormAction()->label('Cancelar'),
+        ];
+    }
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
@@ -45,4 +58,6 @@ class CreateRegistration extends CreateRecord
             new RegistrationQrMail($registration)
         );
     }
+
+
 }
