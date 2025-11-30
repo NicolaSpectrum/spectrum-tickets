@@ -19,10 +19,10 @@ class OrganizerStatsOverview extends StatsOverviewWidget
 
         return [
             Stat::make(
-                'Celebraciones de la Agencia',
+                'Eventos de la Agencia',
                 Celebration::where('agency_id', $agencyId)->count()
             )
-                ->description('Total de celebraciones creadas')
+                ->description('Total de Eventos creados')
                 ->descriptionIcon('heroicon-o-cake')
                 ->color('primary'),
 
@@ -35,7 +35,7 @@ class OrganizerStatsOverview extends StatsOverviewWidget
                 ->color('success'),
 
             Stat::make(
-                'Celebraciones Activas Hoy',
+                'Eventos Activas Hoy',
                 Celebration::where('agency_id', $agencyId)
                     ->whereDate('date', today())
                     ->count()

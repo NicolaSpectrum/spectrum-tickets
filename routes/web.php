@@ -3,8 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\VerifyCelebrationController;
 
+//Route::get('/', function () {
+//    return view('welcome');
+//});
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/admin');
 });
 
 
