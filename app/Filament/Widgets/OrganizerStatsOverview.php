@@ -37,7 +37,7 @@ class OrganizerStatsOverview extends StatsOverviewWidget
             Stat::make(
                 'Eventos Activas Hoy',
                 Celebration::where('agency_id', $agencyId)
-                    ->whereDate('date', today())
+                    ->whereDate('start_date', today())
                     ->count()
             )
                 ->description('Eventos que suceden hoy')

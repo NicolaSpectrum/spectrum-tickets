@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 
 class User extends Authenticatable
 {
@@ -54,5 +56,8 @@ class User extends Authenticatable
         return $this->belongsTo(Agency::class);
     }
 
-
+    public function canAccessPanel(Panel $panel): bool
+    {
+    return $this->hasRole('admin');
+    }
 }

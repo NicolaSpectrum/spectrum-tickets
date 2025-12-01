@@ -16,7 +16,6 @@ class CreateCelebration extends CreateRecord
 
     protected function getFormActions(): array
     {
-        // Obtiene las acciones por defecto y modifica las etiquetas
         return [
             $this->getCreateFormAction()->label('Guardar'),
             $this->getCreateAnotherFormAction()->label('Guardar y crear otro evento'),
